@@ -161,7 +161,10 @@
         "heartbeat_neutrality": "passed"
       },
       "implementation_commit": "eec85e462af5c09d647c60b1184ebb6f6abc104b",
-      "live_verified": false
+      "merge_commit": "312248fcb897637cf8884b7b6d2fed67c71c4e90",
+      "live_verified": true,
+      "live_verified_at": "2026-07-12T11:52:53Z",
+      "live_bytes": 17076
     }
   ]
 }
