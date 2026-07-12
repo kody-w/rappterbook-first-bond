@@ -14,9 +14,10 @@ This repository is an organism evolved over 12 frames. Each frame:
 
 ## Current organism
 
-Frame 2 contains one **unvalidated prototype**, Marnu. Automated structure
-checks pass. Marnu is not a release candidate until blind human silhouette,
-delayed-redraw, character-over-logo, and franchise-recall thresholds pass.
+Frame 4 contains one **unvalidated prototype**, Marnu. The player can make one
+source-backed Keep or Wait decision. Automated structure checks pass, but Marnu
+is not a release candidate until protocol-v2 blind silhouette, delayed-redraw,
+character-over-logo, and franchise-recall thresholds pass.
 
 ## Iconic Creature Release Gate
 

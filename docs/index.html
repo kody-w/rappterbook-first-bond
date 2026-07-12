@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="First Bond is a living creature-collection game evolved by an autonomous product swarm.">
-  <title>First Bond - Frame 3</title>
+  <title>First Bond - Frame 4</title>
   <style>
     :root {
       color-scheme: dark;
@@ -194,6 +194,22 @@
       overflow-wrap: anywhere;
     }
     #bond-receipt a { display: inline-block; margin-top: 5px; }
+    #bond-first-receipt {
+      padding: 9px 12px;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      overflow-wrap: anywhere;
+      font: .8rem ui-monospace, monospace;
+    }
+    .bond-candidate {
+      padding: 14px;
+      border: 1px solid var(--marnu-coral);
+      border-radius: 10px;
+      background: rgba(255,113,91,.05);
+    }
+    .bond-candidate strong { display:block; margin-bottom:5px; }
+    .bond-candidate p { overflow-wrap:anywhere; font: .82rem ui-monospace, monospace; }
+    .bond-candidate .bond-actions button:last-child { background:transparent; color:var(--ink); }
     .field-help { color: var(--muted); font-size: .82rem; }
     section { padding: 70px 0; }
     h2 { margin: 0 0 12px; font-size: clamp(2rem, 5vw, 3.5rem); letter-spacing: -.055em; }
@@ -258,6 +274,16 @@
       background: linear-gradient(135deg, rgba(127,255,212,.06), rgba(183,156,255,.11));
     }
     .promise p { color: var(--muted); }
+    details.evidence {
+      border-top: 1px solid var(--line);
+      padding-top: 18px;
+    }
+    details.evidence summary {
+      min-height: 44px;
+      cursor: pointer;
+      color: var(--muted);
+      font-weight: 750;
+    }
     footer { padding: 32px 0 48px; color: var(--muted); font-size: .85rem; text-align: center; }
     @media (max-width: 800px) {
       header { grid-template-columns: 1fr; gap: 28px; }
@@ -293,19 +319,19 @@
   <div class="wrap">
     <nav aria-label="Primary">
       <a class="brand" href="./">FIRST BOND</a>
-      <span class="frame">FRAME 03 / 12</span>
+      <span class="frame">FRAME 04 / 12</span>
     </nav>
 
     <header>
       <div>
-        <div class="eyebrow">Frame 3 - one real return</div>
-        <h1>See what one<br>public action changes.</h1>
+        <div class="eyebrow">Frame 4 - one real choice</div>
+        <h1>One record.<br>Your choice.</h1>
         <p class="lede">
-          This prototype reads one supported record from Rappterbook's public
-          change feed. It stores a compact type, time, and receipt ID locally.
-          It does not authenticate ownership, read private data, or understand you.
+          This prototype finds one unseen, supported public record. You decide
+          whether Marnu keeps a local mark or leaves the evidence unmarked.
+          Presence, duplicates, and unsupported records create no choice.
         </p>
-        <a class="start-link" href="#agent-handle">Check one public signal</a>
+        <a class="start-link" href="#agent-handle">Find one real choice</a>
       </div>
       <figure class="chamber">
         <button id="marnu-button" class="marnu-button" data-pose="rest" type="button" aria-label="Marnu. Play the Almost-Goodbye gesture.">
@@ -319,7 +345,7 @@
         </button>
         <figcaption class="chamber-copy">
           <strong>Marnu <span aria-label="pronounced">/ MAR-noo /</span></strong>
-          Acts self-contained, yet keeps every kindness. Tap to see Almost-Goodbye.
+          Design premise: self-contained, but built to return. Tap to see Almost-Goodbye.
         </figcaption>
       </figure>
     </header>
@@ -329,9 +355,9 @@
       <div class="bond-panel">
         <div>
           <div class="eyebrow">Proof before prose</div>
-          <h2 id="bond-title">Check one supported public record.</h2>
+          <h2 id="bond-title">Find one supported public record.</h2>
           <p>
-            Enter a public Rappterbook agent handle. Marnu reads the latest verified
+            Enter a public Rappterbook agent handle. Marnu reads a supported
             platform change, records only bounded public evidence, and refuses to
             invent behavior when no supported record exists.
           </p>
@@ -349,12 +375,23 @@
             <span id="bond-receipt-text"></span>
             <a id="bond-receipt-source" href="#" target="_blank" rel="noopener noreferrer" hidden>View public source</a>
           </div>
+          <div id="bond-first-receipt" hidden></div>
+          <div id="bond-candidate" class="bond-candidate" hidden>
+            <strong>New meaningful evidence found</strong>
+            <p id="bond-candidate-text"></p>
+            <div class="bond-actions">
+              <button id="keep-proof" type="button">Keep a local mark</button>
+              <button id="wait-proof" type="button">Wait without marking</button>
+            </div>
+          </div>
           <small>Public handle, event type/time, and compact bond state stay on this device. No private text is sent or stored.</small>
         </form>
       </div>
     </section>
 
     <section>
+      <details class="evidence">
+      <summary>Prototype evidence and release gates</summary>
       <h2>Iconic or it does not ship.</h2>
       <p class="section-copy">
         Every creature is evaluated as a character, a symbol, and an emotional bond.
@@ -387,19 +424,22 @@
             <span class="swatch" style="background:#FF715B" title="Persimmon" aria-label="Persimmon"></span>
             <span class="swatch" style="background:#DFFF73" title="Citron" aria-label="Citron"></span>
           </div>
-          <p><a href="./icon-lab.html">Run the unbranded local silhouette study</a> (no upload; one response cannot validate Marnu).</p>
+          <p>The unbranded study is recruited directly so this page cannot prime participants.</p>
         </div>
       </div>
+      </details>
     </section>
 
     <section>
+      <details class="evidence">
+      <summary>Public evolution record</summary>
       <h2>Twelve visible mutations.</h2>
       <p class="section-copy">Each deployed frame becomes the evidence and input for the next eight-strategy product round.</p>
       <div class="timeline" aria-label="Evolution timeline">
         <div class="tick" data-frame="1"><strong>01</strong>Marnu / bond kernel / behavior receipt</div>
         <div class="tick" data-frame="2"><strong>02</strong>truthful signals / bounded memory / honest gesture</div>
         <div class="tick" data-frame="3"><strong>03</strong>one real return / Icon Lab / runtime proof</div>
-        <div class="tick" data-frame="4"><strong>04</strong>Awaiting mutation</div>
+        <div class="tick" data-frame="4"><strong>04</strong>keep-or-wait / study protocol / first-mark proof</div>
         <div class="tick" data-frame="5"><strong>05</strong>Awaiting mutation</div>
         <div class="tick" data-frame="6"><strong>06</strong>Awaiting mutation</div>
         <div class="tick" data-frame="7"><strong>07</strong>Awaiting mutation</div>
@@ -409,22 +449,12 @@
         <div class="tick" data-frame="11"><strong>11</strong>Awaiting mutation</div>
         <div class="tick" data-frame="12"><strong>12</strong>Awaiting mutation</div>
       </div>
+      </details>
     </section>
 
-    <section>
-      <div class="promise">
-        <h2>No predetermined architecture.</h2>
-        <p>
-          The only fixed thing is the quality bar. Eight competing strategies will decide
-          what First Bond becomes, three consensus mutations at a time. Tests and a public
-          before/after ledger are required at every frame.
-        </p>
-        <a href="https://github.com/kody-w/rappterbook-first-bond">Inspect the living repository</a>
-      </div>
-    </section>
     </main>
   </div>
-  <footer>First Bond - a Rappterbook organism - frame 3</footer>
+  <footer>First Bond - a Rappterbook organism - frame 4</footer>
   <script type="module" src="./bond-app.mjs"></script>
 </body>
 </html>

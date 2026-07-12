@@ -7,7 +7,8 @@ import {
   normalizeAgentId,
   projectBond,
   reduceBond,
-  selectLatestAgentChange
+  selectLatestAgentChange,
+  waitBond
 } from "./bond-core.mjs";
 
 const STORAGE_KEY = "first-bond:marnu:v1";
@@ -25,6 +26,11 @@ const status = document.querySelector("#bond-status");
 const receipt = document.querySelector("#bond-receipt");
 const receiptText = document.querySelector("#bond-receipt-text");
 const receiptSource = document.querySelector("#bond-receipt-source");
+const firstReceipt = document.querySelector("#bond-first-receipt");
+const candidate = document.querySelector("#bond-candidate");
+const candidateText = document.querySelector("#bond-candidate-text");
+const keepButton = document.querySelector("#keep-proof");
+const waitButton = document.querySelector("#wait-proof");
 const clearButton = document.querySelector("#clear-bond");
 const marnuButton = document.querySelector("#marnu-button");
 const mark = document.querySelector("#marnu-mark");
@@ -36,6 +42,8 @@ let requestGeneration = 0;
 let gestureTimer = null;
 let feedCache = null;
 let storageWritable = true;
+let pendingEvent = null;
+let pendingBase = null;
 
 function loadBond() {
   try {
@@ -90,7 +98,28 @@ function render(state) {
   receiptSource.textContent = view.fingerprint
     ? `View current mutable feed [receipt ${view.fingerprint}] (opens new tab)`
     : "View current mutable feed (opens new tab)";
+  firstReceipt.textContent = view.firstReceipt || "";
+  firstReceipt.hidden = !view.firstReceipt;
   if (state.agentId) input.value = state.agentId;
+}
+
+function clearCandidate() {
+  pendingEvent = null;
+  pendingBase = null;
+  candidate.hidden = true;
+  candidateText.textContent = "";
+}
+
+function showCandidate(event, base) {
+  pendingEvent = event;
+  pendingBase = base;
+  candidateText.textContent = [
+    `Public ${event.evidence.type}`,
+    event.evidence.timestamp,
+    `event key ${event.evidence.fingerprint}`
+  ].join(" · ");
+  candidate.hidden = false;
+  keepButton.focus();
 }
 
 function playGesture(announce = true) {
@@ -125,8 +154,10 @@ async function loadFeed(signal) {
 }
 
 async function latestChange(agentId, signal) {
-  const seen = memoryState.agentId === agentId ? memoryState.seen : [];
-  return selectLatestAgentChange(await loadFeed(signal), agentId, seen);
+  const context = memoryState.agentId === agentId
+    ? memoryState
+    : initialBond(agentId);
+  return selectLatestAgentChange(await loadFeed(signal), agentId, context);
 }
 
 form.addEventListener("submit", async event => {
@@ -139,6 +170,7 @@ form.addEventListener("submit", async event => {
     return;
   }
   input.removeAttribute("aria-invalid");
+  clearCandidate();
   requestController?.abort();
   const controller = new AbortController();
   requestController = controller;
@@ -161,10 +193,13 @@ form.addEventListener("submit", async event => {
     const current = memoryState.agentId === agentId
       ? memoryState
       : initialBond(agentId);
-    const next = reduceBond(
-      current,
-      changeToEvent(change, agentId, current.lastSeq + 1)
-    );
+    const bondEvent = changeToEvent(change, agentId, current.lastSeq + 1);
+    if (bondEvent.kind !== "presence" && !current.seen.includes(bondEvent.id)) {
+      showCandidate(bondEvent, current);
+      status.textContent = "New supported evidence found. Choose whether Marnu keeps a mark or leaves it unmarked.";
+      return;
+    }
+    const next = reduceBond(current, bondEvent);
     if (next === current) {
       render(current);
       status.textContent = `Already held. ${MARNU.name} found no newer supported evidence.`;
@@ -172,14 +207,14 @@ form.addEventListener("submit", async event => {
     }
     const persisted = saveBond(next);
     render(next);
-    if (next.lastKind === "presence") {
-      status.textContent = `${MARNU.name} noticed public presence. No permanent meaning or mark was invented.`;
+    if (bondEvent.kind === "presence") {
+      status.textContent = "PRESENCE ONLY · NO MARK KEPT · no gesture played.";
     } else {
       status.textContent = persisted
         ? `${MARNU.name} kept one sourced signal on this device.`
         : `${MARNU.name} kept the signal for this visit; storage is unavailable.`;
     }
-    if (next.lastKind !== "presence") playGesture(false);
+    if (bondEvent.kind !== "presence") playGesture(false);
   } catch (error) {
     if (generation !== requestGeneration) return;
     if (timedOut) {
@@ -198,6 +233,29 @@ form.addEventListener("submit", async event => {
   }
 });
 
+keepButton.addEventListener("click", () => {
+  if (!pendingEvent || !pendingBase) return;
+  const next = reduceBond(pendingBase, pendingEvent);
+  const persisted = saveBond(next);
+  render(next);
+  clearCandidate();
+  status.textContent = persisted
+    ? "KEEP · one public record became a local mark on this browser."
+    : "KEEP · mark held for this visit; browser storage is unavailable.";
+  playGesture(false);
+});
+
+waitButton.addEventListener("click", () => {
+  if (!pendingEvent || !pendingBase) return;
+  const next = waitBond(pendingBase, pendingEvent);
+  const persisted = saveBond(next);
+  render(next);
+  clearCandidate();
+  status.textContent = persisted
+    ? "WAIT · evidence acknowledged and left unmarked on this browser."
+    : "WAIT · evidence left unmarked for this visit; browser storage is unavailable.";
+});
+
 input.addEventListener("input", () => input.removeAttribute("aria-invalid"));
 startLink.addEventListener("click", () => setTimeout(() => input.focus(), 0));
 
@@ -210,6 +268,7 @@ marnuButton.addEventListener("animationend", () => {
 clearButton.addEventListener("click", () => {
   requestGeneration += 1;
   requestController?.abort("clear");
+  clearCandidate();
   try {
     localStorage.removeItem(STORAGE_KEY);
   } catch {
