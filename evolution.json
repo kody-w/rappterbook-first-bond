@@ -270,9 +270,33 @@
         "named_creatures": 1,
         "human_test_routes": 1
       },
-      "after_metrics": null,
-      "tests": null,
-      "implementation_commit": "pending",
+      "after_metrics": {
+        "tracked_files": 13,
+        "source_bytes": 100395,
+        "source_growth_ratio": 0.416,
+        "python_tests": 13,
+        "node_tests": 33,
+        "playable_interactions": 9,
+        "named_creatures": 1,
+        "human_test_routes": 1,
+        "minimum_human_sample": 30,
+        "maximum_persisted_bytes": 1024,
+        "network_uploads": 0
+      },
+      "scope_note": "Frame growth exceeded the 10-20% target because all three selected mutations required a versioned study state machine, strict local aggregator, and persistent game decision. No existing creature identity or architecture was rewritten.",
+      "tests": {
+        "python": "13 passed",
+        "node": "33 passed",
+        "static_site_smoke": "7 resources returned HTTP 200",
+        "javascript_syntax": "5 modules passed node --check",
+        "keep_wait_consequence": "passed",
+        "first_mark_provenance": "passed",
+        "schema_one_and_two_migration": "passed",
+        "protocol_v2_timing_and_eligibility": "passed",
+        "aggregate_n29_pending_n30_boundary": "passed",
+        "duplicate_malformed_mixed_digest_exclusion": "passed"
+      },
+      "implementation_commit": "bda887c3189c0c10d8fd07b2dbeebbbb1fabb91c",
       "live_verified": false
     }
   ]
