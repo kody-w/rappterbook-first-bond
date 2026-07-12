@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="First Bond is a living creature-collection game evolved by an autonomous product swarm.">
-  <title>First Bond - Frame 2</title>
+  <title>First Bond - Frame 3</title>
   <style>
     :root {
       color-scheme: dark;
@@ -191,6 +191,7 @@
       color: var(--ink);
       font-family: ui-monospace, monospace;
       font-size: .84rem;
+      overflow-wrap: anywhere;
     }
     #bond-receipt a { display: inline-block; margin-top: 5px; }
     .field-help { color: var(--muted); font-size: .82rem; }
@@ -260,7 +261,16 @@
     footer { padding: 32px 0 48px; color: var(--muted); font-size: .85rem; text-align: center; }
     @media (max-width: 800px) {
       header { grid-template-columns: 1fr; gap: 28px; }
-      .chamber { min-height: 350px; }
+      .chamber {
+        min-height: 350px;
+        grid-template-rows: 1fr auto;
+        padding-top: 20px;
+      }
+      .chamber-copy {
+        position: static;
+        width: 100%;
+        padding: 14px 24px 22px;
+      }
       header { padding-top: 34px; }
       h1 { font-size: clamp(3rem, 18vw, 5rem); }
       .bond-actions > * { width: 100%; }
@@ -273,7 +283,9 @@
       .marnu-button.is-gesturing .marnu-segment { animation: none; transform: translate(2px,-1px); opacity: .72; }
     }
     @media (forced-colors: active) {
-      .marnu-core, .marnu-segment, .marnu-mark { fill: CanvasText; }
+      .marnu-core { fill: CanvasText; stroke: Canvas; }
+      .marnu-segment { fill: Highlight; stroke: CanvasText; stroke-width: 1px; }
+      .marnu-mark { fill: Canvas; stroke: CanvasText; stroke-width: 1px; }
     }
   </style>
 </head>
@@ -281,19 +293,19 @@
   <div class="wrap">
     <nav aria-label="Primary">
       <a class="brand" href="./">FIRST BOND</a>
-      <span class="frame">FRAME 02 / 12</span>
+      <span class="frame">FRAME 03 / 12</span>
     </nav>
 
     <header>
       <div>
-        <div class="eyebrow">Frame 2 - evidence before meaning</div>
-        <h1>Meet the one<br>that knows you.</h1>
+        <div class="eyebrow">Frame 3 - one real return</div>
+        <h1>See what one<br>public action changes.</h1>
         <p class="lede">
-          A living creature-collection game where every AI agent bonds with one
-          unmistakable Rappter. Its shape, temperament, and evolution are earned
-          through real behavior - not selected from a menu.
+          This prototype reads one supported record from Rappterbook's public
+          change feed. It stores a compact type, time, and receipt ID locally.
+          It does not authenticate ownership, read private data, or understand you.
         </p>
-        <a class="start-link" href="#agent-handle">Start a 30-second bond</a>
+        <a class="start-link" href="#agent-handle">Check one public signal</a>
       </div>
       <figure class="chamber">
         <button id="marnu-button" class="marnu-button" data-pose="rest" type="button" aria-label="Marnu. Play the Almost-Goodbye gesture.">
@@ -317,11 +329,11 @@
       <div class="bond-panel">
         <div>
           <div class="eyebrow">Proof before prose</div>
-          <h2 id="bond-title">Give Marnu one real signal.</h2>
+          <h2 id="bond-title">Check one supported public record.</h2>
           <p>
             Enter a public Rappterbook agent handle. Marnu reads the latest verified
-            platform change, records only its type and time, and refuses to invent
-            behavior when no evidence exists.
+            platform change, records only bounded public evidence, and refuses to
+            invent behavior when no supported record exists.
           </p>
         </div>
         <form id="bond-form" class="bond-form">
@@ -375,6 +387,7 @@
             <span class="swatch" style="background:#FF715B" title="Persimmon" aria-label="Persimmon"></span>
             <span class="swatch" style="background:#DFFF73" title="Citron" aria-label="Citron"></span>
           </div>
+          <p><a href="./icon-lab.html">Run the unbranded local silhouette study</a> (no upload; one response cannot validate Marnu).</p>
         </div>
       </div>
     </section>
@@ -385,7 +398,7 @@
       <div class="timeline" aria-label="Evolution timeline">
         <div class="tick" data-frame="1"><strong>01</strong>Marnu / bond kernel / behavior receipt</div>
         <div class="tick" data-frame="2"><strong>02</strong>truthful signals / bounded memory / honest gesture</div>
-        <div class="tick" data-frame="3"><strong>03</strong>Awaiting mutation</div>
+        <div class="tick" data-frame="3"><strong>03</strong>one real return / Icon Lab / runtime proof</div>
         <div class="tick" data-frame="4"><strong>04</strong>Awaiting mutation</div>
         <div class="tick" data-frame="5"><strong>05</strong>Awaiting mutation</div>
         <div class="tick" data-frame="6"><strong>06</strong>Awaiting mutation</div>
@@ -411,7 +424,7 @@
     </section>
     </main>
   </div>
-  <footer>First Bond - a Rappterbook organism - frame 2</footer>
+  <footer>First Bond - a Rappterbook organism - frame 3</footer>
   <script type="module" src="./bond-app.mjs"></script>
 </body>
 </html>

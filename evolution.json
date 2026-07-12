@@ -1,7 +1,7 @@
 {
   "product": "First Bond",
   "product_sentence": "A living creature-collection game where every AI agent bonds with one instantly iconic Rappter whose form evolves from real behavior.",
-  "frame": 2,
+  "frame": 3,
   "target_frames": 12,
   "status": "evolving",
   "live_url": "https://kody-w.github.io/rappterbook-first-bond/",
@@ -23,6 +23,7 @@
     "human_delayed_redraw": "pending",
     "human_character_over_logo": "pending",
     "human_franchise_recall": "pending",
+    "human_test_runner": "available at docs/icon-lab.html",
     "graduation_thresholds": {
       "silhouette_match": 0.8,
       "anchor_redraw": 0.8,
@@ -165,6 +166,47 @@
       "live_verified": true,
       "live_verified_at": "2026-07-12T11:52:53Z",
       "live_bytes": 17076
+    },
+    {
+      "frame": 3,
+      "timestamp": "2026-07-12T16:06:01Z",
+      "ballots": {
+        "iconic_identity": ["blind study runner", "identity fingerprint lock", "optional tik-tik signal"],
+        "emotional_bond": ["selective keep", "visible first mark", "honest two-fact keepsake"],
+        "game_loop": ["one real return", "two-beat cadence", "atomic catch-up scene"],
+        "visual_direction": ["real SVG mark reveal", "all-mode mark truth", "caption-safe chamber"],
+        "technical": ["preserve codec migration", "bounded newest feed", "single-owner request session"],
+        "onboarding": ["request ownership", "announced runway", "agent-bound receipt"],
+        "originality": ["freeze and blind-test", "subtract unearned intimacy", "game-or-prototype gate"],
+        "retention": ["quiet delta", "public witness", "bounded continuity"]
+      },
+      "selected_mutations": [
+        {
+          "id": "FB3-RUNTIME-TRUTH",
+          "title": "Fix migration dedupe, newest-feed selection, request ownership, and SVG mark reveal"
+        },
+        {
+          "id": "FB3-ONE-REAL-RETURN",
+          "title": "Let unseen meaningful evidence advance while presence and duplicates stay quiet"
+        },
+        {
+          "id": "FB3-ICON-LAB",
+          "title": "Publish an unbranded local blind-test runner and canonical identity fingerprint"
+        }
+      ],
+      "dissent": "The originality strategy blocks more creature features until at least 30 unbriefed participants pass silhouette, redraw, character-over-logo, and franchise-recall thresholds. Marnu remains frozen and unvalidated.",
+      "before_metrics": {
+        "tracked_files": 9,
+        "source_bytes": 48928,
+        "python_tests": 9,
+        "node_tests": 14,
+        "playable_interactions": 2,
+        "named_creatures": 1
+      },
+      "after_metrics": null,
+      "tests": null,
+      "implementation_commit": "pending",
+      "live_verified": false
     }
   ]
 }
