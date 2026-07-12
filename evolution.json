@@ -86,7 +86,10 @@
         "javascript_syntax": "3 modules passed node --check"
       },
       "implementation_commit": "d4ac8b57d6248ac7136307fa9d52d014a4f8402e",
-      "live_verified": false
+      "merge_commit": "2f19518f7d3c9e0e3ef9a8532c24604ec6c38656",
+      "live_verified": true,
+      "live_verified_at": "2026-07-12T07:36:31Z",
+      "live_bytes": 15759
     }
   ]
 }
