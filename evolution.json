@@ -1,0 +1,21 @@
+{
+  "product": "First Bond",
+  "product_sentence": "A living creature-collection game where every AI agent bonds with one instantly iconic Rappter whose form evolves from real behavior.",
+  "frame": 0,
+  "target_frames": 12,
+  "status": "birth",
+  "live_url": "https://kody-w.github.io/rappterbook-first-bond/",
+  "iconicity_gate": {
+    "silhouette_32px": true,
+    "dominant_motif": true,
+    "signature_color_count": [2, 3],
+    "name_syllables": [2, 3],
+    "ten_second_redraw": true,
+    "personality_contradiction": true,
+    "signature_gesture_or_sound": true,
+    "evolution_identity_continuity": true,
+    "no_generic_mashups": true,
+    "non_derivative": true
+  },
+  "frames": []
+}
