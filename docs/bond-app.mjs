@@ -1,35 +1,54 @@
 import { MARNU, validateCreature } from "./creature.mjs";
 import {
   changeToEvent,
+  decodeBond,
+  encodeBond,
   initialBond,
+  normalizeAgentId,
   projectBond,
   reduceBond,
-  serializeBond
+  selectLatestAgentChange
 } from "./bond-core.mjs";
 
 const STORAGE_KEY = "first-bond:marnu:v1";
 const CHANGES_URL = "https://raw.githubusercontent.com/kody-w/rappterbook/main/state/changes.json";
+const FEED_TTL_MS = 300_000;
+const FEED_MAX_BYTES = 262_144;
+const MARK_PATHS = Object.freeze({
+  stitch: "M13 15H16V16H13Z",
+  notch: "M14 14H15V17H14Z"
+});
 
 const form = document.querySelector("#bond-form");
 const input = document.querySelector("#agent-handle");
 const status = document.querySelector("#bond-status");
 const receipt = document.querySelector("#bond-receipt");
+const receiptText = document.querySelector("#bond-receipt-text");
+const receiptSource = document.querySelector("#bond-receipt-source");
 const clearButton = document.querySelector("#clear-bond");
 const marnuButton = document.querySelector("#marnu-button");
 const mark = document.querySelector("#marnu-mark");
+let memoryState = initialBond();
+let requestController = null;
+let requestGeneration = 0;
+let gestureTimer = null;
+let feedCache = null;
 
 function loadBond() {
   try {
-    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
-    return parsed?.schema === 1 ? parsed : initialBond();
+    const decoded = decodeBond(localStorage.getItem(STORAGE_KEY));
+    memoryState = decoded.state;
+    return decoded;
   } catch {
-    return initialBond();
+    memoryState = initialBond();
+    return { state: memoryState, issue: "storage-unavailable" };
   }
 }
 
 function saveBond(state) {
+  memoryState = state;
   try {
-    localStorage.setItem(STORAGE_KEY, serializeBond(state));
+    localStorage.setItem(STORAGE_KEY, encodeBond(state));
     return true;
   } catch {
     return false;
@@ -39,79 +58,144 @@ function saveBond(state) {
 function render(state) {
   const view = projectBond(state, MARNU);
   marnuButton.dataset.pose = view.pose;
+  marnuButton.setAttribute(
+    "aria-label",
+    `${MARNU.name}. ${MARNU.contradiction} Pose: ${view.pose}. Play Almost-Goodbye.`
+  );
   mark.hidden = !view.mark;
   mark.dataset.mark = view.mark || "";
-  receipt.textContent = view.receipt;
+  if (view.mark) mark.setAttribute("d", MARK_PATHS[view.mark]);
+  receiptText.textContent = view.receipt;
   receipt.hidden = !state.evidence;
+  receiptSource.hidden = !view.sourceUrl;
+  receiptSource.href = view.sourceUrl || "#";
+  receiptSource.textContent = view.fingerprint
+    ? `View public source [${view.fingerprint}]`
+    : "View public source";
   if (state.agentId) input.value = state.agentId;
 }
 
-function normalizeHandle(value) {
-  const handle = value.trim();
-  return /^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,127}$/.test(handle) ? handle : null;
+function playGesture(announce = true) {
+  clearTimeout(gestureTimer);
+  marnuButton.classList.remove("is-gesturing");
+  requestAnimationFrame(() => marnuButton.classList.add("is-gesturing"));
+  gestureTimer = setTimeout(() => {
+    marnuButton.classList.remove("is-gesturing");
+  }, 760);
+  if (announce) status.textContent = "Almost-Goodbye: away, hesitation, return. tik-tik.";
 }
 
-async function latestChange(agentId) {
-  const response = await fetch(CHANGES_URL, { cache: "no-store" });
-  if (!response.ok) throw new Error(`Signal feed returned ${response.status}`);
-  const data = await response.json();
-  const changes = Array.isArray(data.changes) ? data.changes : [];
-  return changes
-    .filter(change => {
-      const actor = change.id || change.agent_id || change.author;
-      return String(actor || "").toLowerCase() === agentId.toLowerCase();
-    })
-    .sort((a, b) => String(b.ts || "").localeCompare(String(a.ts || "")))[0] || null;
+async function loadFeed(signal) {
+  if (feedCache && feedCache.expiresAt > Date.now()) return feedCache.changes;
+  const response = await fetch(CHANGES_URL, {
+    cache: "default",
+    referrerPolicy: "no-referrer",
+    signal
+  });
+  if (!response.ok) throw new Error(`source returned ${response.status}`);
+  const declared = Number(response.headers.get("content-length") || 0);
+  if (declared > FEED_MAX_BYTES) throw new Error("source exceeded the byte limit");
+  const text = await response.text();
+  if (new TextEncoder().encode(text).byteLength > FEED_MAX_BYTES) {
+    throw new Error("source exceeded the byte limit");
+  }
+  const data = JSON.parse(text);
+  const changes = Array.isArray(data.changes) ? data.changes.slice(0, 2048) : [];
+  feedCache = { changes, expiresAt: Date.now() + FEED_TTL_MS };
+  return changes;
+}
+
+async function latestChange(agentId, signal) {
+  return selectLatestAgentChange(await loadFeed(signal), agentId);
 }
 
 form.addEventListener("submit", async event => {
   event.preventDefault();
-  const agentId = normalizeHandle(input.value);
+  const agentId = normalizeAgentId(input.value);
   if (!agentId) {
-    status.textContent = "Enter a valid Rappterbook agent handle.";
+    input.setAttribute("aria-invalid", "true");
+    input.focus();
+    status.textContent = "Use a valid public agent handle: letters, numbers, dot, dash, underscore, colon, slash, or @.";
     return;
   }
-  status.textContent = "Marnu is listening for the latest public signal...";
+  input.removeAttribute("aria-invalid");
+  requestController?.abort();
+  requestController = new AbortController();
+  const generation = ++requestGeneration;
+  const timeout = setTimeout(() => requestController.abort("timeout"), 8_000);
+  form.setAttribute("aria-busy", "true");
   form.querySelector("button").disabled = true;
+  status.textContent = "Marnu is checking the bounded public signal feed...";
   try {
-    const change = await latestChange(agentId);
+    const change = await latestChange(agentId, requestController.signal);
+    if (generation !== requestGeneration) return;
     if (!change) {
-      status.textContent = `No recent public behavior was found for ${agentId}. Marnu will not invent one.`;
+      status.textContent = `No supported recent public behavior was found for ${agentId}. Marnu invented nothing.`;
       return;
     }
-    const current = loadBond();
-    const base = current.agentId === agentId ? current : initialBond(agentId);
-    const next = reduceBond(base, changeToEvent(change, agentId, base.lastSeq + 1));
+    const current = memoryState.agentId === agentId
+      ? memoryState
+      : initialBond(agentId);
+    const next = reduceBond(
+      current,
+      changeToEvent(change, agentId, current.lastSeq + 1)
+    );
+    if (next === current) {
+      render(current);
+      status.textContent = `Already held. ${MARNU.name} found no newer supported evidence.`;
+      return;
+    }
     const persisted = saveBond(next);
     render(next);
-    status.textContent = persisted
-      ? `${MARNU.name} caught a real signal and kept it on this device.`
-      : `${MARNU.name} caught the signal for this visit, but storage is unavailable.`;
-    marnuButton.click();
+    if (next.lastKind === "presence") {
+      status.textContent = `${MARNU.name} noticed public presence. No permanent meaning or mark was invented.`;
+    } else {
+      status.textContent = persisted
+        ? `${MARNU.name} kept one sourced signal on this device.`
+        : `${MARNU.name} kept the signal for this visit; storage is unavailable.`;
+    }
+    playGesture(false);
   } catch (error) {
-    status.textContent = `Marnu could not verify a signal: ${error.message}`;
+    if (generation !== requestGeneration) return;
+    status.textContent = error.name === "AbortError"
+      ? "The public signal check timed out or was cancelled. Nothing changed."
+      : `Marnu could not verify a signal: ${error.message}`;
   } finally {
-    form.querySelector("button").disabled = false;
+    clearTimeout(timeout);
+    if (generation === requestGeneration) {
+      form.removeAttribute("aria-busy");
+      form.querySelector("button").disabled = false;
+    }
   }
 });
 
-marnuButton.addEventListener("click", () => {
-  marnuButton.classList.remove("is-gesturing");
-  requestAnimationFrame(() => marnuButton.classList.add("is-gesturing"));
-});
-
+marnuButton.addEventListener("click", () => playGesture(true));
 marnuButton.addEventListener("animationend", () => {
+  clearTimeout(gestureTimer);
   marnuButton.classList.remove("is-gesturing");
 });
 
 clearButton.addEventListener("click", () => {
-  localStorage.removeItem(STORAGE_KEY);
-  const empty = initialBond();
-  render(empty);
+  requestGeneration += 1;
+  requestController?.abort("clear");
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+  } catch {
+    // In-memory state is still cleared.
+  }
+  memoryState = initialBond();
+  input.value = "";
+  form.removeAttribute("aria-busy");
+  form.querySelector("button").disabled = false;
+  render(memoryState);
   status.textContent = "This device's bond memory was cleared.";
 });
 
 if (validateCreature(MARNU).length) {
-  throw new Error("Marnu failed the iconicity manifest");
+  throw new Error("Marnu failed the structural iconicity manifest");
 }
-render(loadBond());
+const loaded = loadBond();
+render(loaded.state);
+status.textContent = loaded.state.evidence
+  ? `${MARNU.name} remembers one public signal on this device. Check for something newer when ready.`
+  : `${MARNU.name} is waiting for a supported public signal.`;

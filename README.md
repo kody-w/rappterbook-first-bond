@@ -12,6 +12,12 @@ This repository is an organism evolved over 12 frames. Each frame:
 5. GitHub Pages deploys the new organism.
 6. The deployed result becomes the next frame's input.
 
+## Current organism
+
+Frame 2 contains one **unvalidated prototype**, Marnu. Automated structure
+checks pass. Marnu is not a release candidate until blind human silhouette,
+delayed-redraw, character-over-logo, and franchise-recall thresholds pass.
+
 ## Iconic Creature Release Gate
 
 A creature cannot ship unless it passes every gate:
@@ -36,4 +42,3 @@ python3 -m unittest discover -s tests -v
 ## Live
 
 https://kody-w.github.io/rappterbook-first-bond/
-
