@@ -70,9 +70,22 @@
         "playable_interactions": 0,
         "named_creatures": 0
       },
-      "after_metrics": null,
-      "tests": null,
-      "implementation_commit": "pending",
+      "after_metrics": {
+        "tracked_files": 9,
+        "source_bytes": 32947,
+        "python_tests": 7,
+        "node_tests": 6,
+        "playable_interactions": 2,
+        "named_creatures": 1,
+        "initial_network_requests": 4
+      },
+      "tests": {
+        "python": "7 passed",
+        "node": "6 passed",
+        "static_site_smoke": "4 resources returned HTTP 200",
+        "javascript_syntax": "3 modules passed node --check"
+      },
+      "implementation_commit": "d4ac8b57d6248ac7136307fa9d52d014a4f8402e",
       "live_verified": false
     }
   ]
