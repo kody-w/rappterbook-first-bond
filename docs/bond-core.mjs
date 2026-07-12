@@ -79,4 +79,3 @@ export function serializeBond(state) {
   if (encoded.length > 1024) throw new RangeError("bond state exceeds 1 KiB");
   return encoded;
 }
-*** End of File

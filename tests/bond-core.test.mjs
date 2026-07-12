@@ -54,4 +54,3 @@ test("persisted bond remains under one KiB", () => {
   const encoded = serializeBond(reduceBond(initialBond("agent-a"), event));
   assert.ok(encoded.length < 1024);
 });
-*** End of File

@@ -33,4 +33,3 @@ export function validateCreature(definition) {
   if (definition.evolutionAnchors.length !== 3) errors.push("evolution-anchors");
   return errors;
 }
-*** End of File

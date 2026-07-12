@@ -115,4 +115,3 @@ if (validateCreature(MARNU).length) {
   throw new Error("Marnu failed the iconicity manifest");
 }
 render(loadBond());
-*** End of File
