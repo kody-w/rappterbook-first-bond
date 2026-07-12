@@ -297,7 +297,11 @@
         "duplicate_malformed_mixed_digest_exclusion": "passed"
       },
       "implementation_commit": "bda887c3189c0c10d8fd07b2dbeebbbb1fabb91c",
-      "live_verified": false
+      "merge_commit": "9e6aa62b8b4fe744a159b62d8dcf72307dd2345d",
+      "live_verified": true,
+      "live_verified_at": "2026-07-12T20:37:25Z",
+      "live_bytes": 18628,
+      "icon_lab_live_bytes": 5201
     }
   ]
 }
