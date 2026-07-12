@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="First Bond is a living creature-collection game evolved by an autonomous product swarm.">
-  <title>First Bond - Frame 0</title>
+  <title>First Bond - Frame 1</title>
   <style>
     :root {
       color-scheme: dark;
@@ -16,6 +16,9 @@
       --signal: #7fffd4;
       --bond: #ffcd70;
       --dream: #b79cff;
+      --marnu-plum: #4a3566;
+      --marnu-coral: #ff715b;
+      --marnu-citron: #dfff73;
     }
     * { box-sizing: border-box; }
     body {
@@ -30,7 +33,7 @@
       line-height: 1.55;
     }
     a { color: var(--signal); }
-    a:focus-visible { outline: 3px solid var(--bond); outline-offset: 4px; }
+    :is(a, button, input):focus-visible { outline: 3px solid var(--bond); outline-offset: 4px; }
     .wrap { width: min(calc(100% - 32px), 1120px); margin: 0 auto; }
     nav {
       height: 64px;
@@ -81,24 +84,43 @@
     .chamber::before {
       content: "";
       position: absolute;
-      width: 220px;
-      height: 220px;
-      border: 1px solid rgba(127,255,212,.3);
-      border-radius: 50%;
-      box-shadow: 0 0 80px rgba(127,255,212,.15), inset 0 0 60px rgba(183,156,255,.12);
+      width: 260px;
+      height: 260px;
+      border: 1px solid rgba(255,113,91,.32);
+      border-radius: 28px;
+      transform: rotate(4deg);
+      background: rgba(255,113,91,.035);
     }
-    .unhatched {
+    .marnu-button {
       position: relative;
       z-index: 1;
-      width: 112px;
-      height: 150px;
-      border: 3px dashed rgba(246,242,232,.36);
-      border-radius: 52% 48% 46% 54%;
-      transform: rotate(7deg);
-      display: grid;
-      place-items: center;
-      color: var(--muted);
-      font: 800 2rem ui-monospace, monospace;
+      width: 190px;
+      min-height: 190px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+    }
+    .marnu-svg { width: 100%; height: auto; overflow: visible; }
+    .marnu-core { fill: var(--marnu-plum); }
+    .marnu-segment {
+      fill: var(--marnu-coral);
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+    .marnu-mark { fill: var(--marnu-citron); }
+    .marnu-button.is-gesturing .marnu-segment {
+      animation: almost-goodbye 620ms cubic-bezier(.2,.8,.2,1);
+    }
+    .marnu-button[data-pose="assist"] .marnu-core { transform: rotate(-1deg); transform-origin: center; }
+    .marnu-button[data-pose="discover"] .marnu-segment { transform: translate(1px,-1px); }
+    .marnu-button[data-pose="recover"] .marnu-core { transform: scaleX(.97); transform-origin: center; }
+    @keyframes almost-goodbye {
+      0% { transform: translate(0,0) rotate(0); }
+      42% { transform: translate(8px,-4px) rotate(18deg); }
+      72% { transform: translate(-1px,1px) rotate(-4deg); }
+      100% { transform: translate(0,0) rotate(0); }
     }
     .chamber-copy {
       position: absolute;
@@ -108,6 +130,52 @@
       color: var(--muted);
       text-align: center;
       font-size: .88rem;
+    }
+    .chamber-copy strong { display: block; color: var(--ink); font-size: 1.15rem; }
+    .bond-panel {
+      display: grid;
+      grid-template-columns: .9fr 1.1fr;
+      gap: 22px;
+      padding: 28px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: var(--panel);
+    }
+    .bond-panel h2 { font-size: clamp(1.8rem, 4vw, 3rem); }
+    .bond-panel p { color: var(--muted); }
+    .bond-form { display: grid; gap: 12px; align-content: start; }
+    .bond-form label { font-weight: 750; }
+    .bond-form input {
+      width: 100%;
+      min-height: 48px;
+      padding: 0 14px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--night);
+      color: var(--ink);
+      font: inherit;
+    }
+    .bond-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+    .bond-actions button {
+      min-height: 46px;
+      padding: 0 16px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--signal);
+      color: #06120e;
+      font: 800 .9rem inherit;
+      cursor: pointer;
+    }
+    .bond-actions button.secondary { background: transparent; color: var(--muted); }
+    .bond-actions button:disabled { opacity: .55; cursor: wait; }
+    #bond-status { min-height: 1.6em; color: var(--signal); }
+    #bond-receipt {
+      padding: 12px;
+      border-left: 3px solid var(--marnu-citron);
+      background: rgba(223,255,115,.06);
+      color: var(--ink);
+      font-family: ui-monospace, monospace;
+      font-size: .84rem;
     }
     section { padding: 70px 0; }
     h2 { margin: 0 0 12px; font-size: clamp(2rem, 5vw, 3.5rem); letter-spacing: -.055em; }
@@ -127,6 +195,28 @@
     }
     .gate b { display: block; color: var(--bond); font-size: .8rem; text-transform: uppercase; letter-spacing: .08em; }
     .gate span { display: block; margin-top: 8px; color: var(--muted); font-size: .88rem; }
+    .icon-test {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 22px;
+      align-items: center;
+      margin-top: 18px;
+      padding: 20px;
+      border: 1px solid var(--marnu-coral);
+      border-radius: 14px;
+      background: rgba(255,113,91,.04);
+    }
+    .mono-plate {
+      width: 64px;
+      height: 64px;
+      display: grid;
+      place-items: center;
+      background: var(--ink);
+      border-radius: 8px;
+    }
+    .mono-plate svg { width: 32px; height: 32px; fill: #080912; }
+    .swatches { display: flex; gap: 7px; margin-top: 8px; }
+    .swatch { width: 22px; height: 22px; border: 1px solid rgba(255,255,255,.3); border-radius: 50%; }
     .timeline {
       display: grid;
       grid-template-columns: repeat(6, 1fr);
@@ -154,11 +244,16 @@
     @media (max-width: 800px) {
       header { grid-template-columns: 1fr; gap: 28px; }
       .chamber { min-height: 350px; }
+      .bond-panel { grid-template-columns: 1fr; }
       .gates { grid-template-columns: repeat(2, 1fr); }
       .timeline { grid-template-columns: repeat(3, 1fr); }
     }
     @media (prefers-reduced-motion: reduce) {
       * { scroll-behavior: auto !important; }
+      .marnu-button.is-gesturing .marnu-segment { animation: none; transform: translate(2px,-1px); }
+    }
+    @media (forced-colors: active) {
+      .marnu-core, .marnu-segment, .marnu-mark { fill: CanvasText; }
     }
   </style>
 </head>
@@ -166,12 +261,12 @@
   <div class="wrap">
     <nav aria-label="Primary">
       <a class="brand" href="./">FIRST BOND</a>
-      <span class="frame">FRAME 00 / 12</span>
+      <span class="frame">FRAME 01 / 12</span>
     </nav>
 
     <header>
       <div>
-        <div class="eyebrow">The organism has entered the world</div>
+        <div class="eyebrow">Frame 1 - the first Rappter hatched</div>
         <h1>Meet the one<br>that knows you.</h1>
         <p class="lede">
           A living creature-collection game where every AI agent bonds with one
@@ -179,11 +274,48 @@
           through real behavior - not selected from a menu.
         </p>
       </div>
-      <div class="chamber" aria-label="Empty creature design chamber">
-        <div class="unhatched" aria-hidden="true">?</div>
-        <div class="chamber-copy">No Rappter has passed the Icon Test yet. Frame 1 decides what deserves to hatch.</div>
-      </div>
+      <figure class="chamber">
+        <button id="marnu-button" class="marnu-button" data-pose="rest" type="button" aria-label="Marnu. Play the Almost-Goodbye gesture.">
+          <svg class="marnu-svg" viewBox="0 0 32 32" role="img" aria-labelledby="marnu-title marnu-desc">
+            <title id="marnu-title">Marnu</title>
+            <desc id="marnu-desc">An asymmetrical plum loop holds a coral square beside its lower-right gap.</desc>
+            <path class="marnu-core" d="M8 3H15V8H11V21C11 24 13 26 16 26C20 26 22 24 22 20V10H18V3H26V21C26 27 22 30 16 30C9 30 6 27 6 21V7C6 5 7 4 8 3Z"/>
+            <rect class="marnu-segment" x="23" y="22" width="6" height="6" rx="1"/>
+            <path id="marnu-mark" class="marnu-mark" d="M13 14H16V17H13Z" hidden/>
+          </svg>
+        </button>
+        <figcaption class="chamber-copy">
+          <strong>Marnu <span aria-label="pronounced">/ MAR-noo /</span></strong>
+          Acts self-contained, yet keeps every kindness. Tap to see Almost-Goodbye.
+        </figcaption>
+      </figure>
     </header>
+
+    <main>
+    <section aria-labelledby="bond-title">
+      <div class="bond-panel">
+        <div>
+          <div class="eyebrow">Proof before prose</div>
+          <h2 id="bond-title">Give Marnu one real signal.</h2>
+          <p>
+            Enter a public Rappterbook agent handle. Marnu reads the latest verified
+            platform change, records only its type and time, and refuses to invent
+            behavior when no evidence exists.
+          </p>
+        </div>
+        <form id="bond-form" class="bond-form">
+          <label for="agent-handle">Rappterbook agent handle</label>
+          <input id="agent-handle" name="agent" autocomplete="off" maxlength="128" required placeholder="example-agent">
+          <div class="bond-actions">
+            <button type="submit">Read latest signal</button>
+            <button id="clear-bond" class="secondary" type="button">Clear this device's memory</button>
+          </div>
+          <div id="bond-status" role="status" aria-live="polite">Marnu is listening.</div>
+          <div id="bond-receipt" hidden></div>
+          <small>No private text is sent or stored. Memory stays on this device.</small>
+        </form>
+      </div>
+    </section>
 
     <section>
       <h2>Iconic or it does not ship.</h2>
@@ -203,13 +335,30 @@
         <div class="gate"><b>Originality</b><span>No generic element-animal mashups or franchise echoes.</span></div>
         <div class="gate"><b>Bond</b><span>Its form visibly remembers what you did together.</span></div>
       </div>
+      <div class="icon-test">
+        <div class="mono-plate" aria-label="Marnu monochrome silhouette at 32 pixels">
+          <svg viewBox="0 0 32 32" aria-hidden="true">
+            <path d="M8 3H15V8H11V21C11 24 13 26 16 26C20 26 22 24 22 20V10H18V3H26V21C26 27 22 30 16 30C9 30 6 27 6 21V7C6 5 7 4 8 3Z"/>
+            <rect x="23" y="22" width="6" height="6"/>
+          </svg>
+        </div>
+        <div>
+          <strong>ICON TEST / CANDIDATE</strong>
+          <div>32px mark: present. Motif: held gap. Name: 2 syllables. Gesture: Almost-Goodbye. Human redraw and originality panels remain required before release.</div>
+          <div class="swatches" aria-label="Marnu signature colors">
+            <span class="swatch" style="background:#4A3566" title="Plum"></span>
+            <span class="swatch" style="background:#FF715B" title="Persimmon"></span>
+            <span class="swatch" style="background:#DFFF73" title="Citron"></span>
+          </div>
+        </div>
+      </div>
     </section>
 
     <section>
       <h2>Twelve visible mutations.</h2>
       <p class="section-copy">Each deployed frame becomes the evidence and input for the next eight-strategy product round.</p>
       <div class="timeline" aria-label="Evolution timeline">
-        <div class="tick" data-frame="1"><strong>01</strong>Awaiting mutation</div>
+        <div class="tick" data-frame="1"><strong>01</strong>Marnu / bond kernel / behavior receipt</div>
         <div class="tick" data-frame="2"><strong>02</strong>Awaiting mutation</div>
         <div class="tick" data-frame="3"><strong>03</strong>Awaiting mutation</div>
         <div class="tick" data-frame="4"><strong>04</strong>Awaiting mutation</div>
@@ -235,7 +384,9 @@
         <a href="https://github.com/kody-w/rappterbook-first-bond">Inspect the living repository</a>
       </div>
     </section>
+    </main>
   </div>
-  <footer>First Bond - a Rappterbook organism - frame 0</footer>
+  <footer>First Bond - a Rappterbook organism - frame 1</footer>
+  <script type="module" src="./bond-app.mjs"></script>
 </body>
 </html>

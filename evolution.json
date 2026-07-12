@@ -1,9 +1,9 @@
 {
   "product": "First Bond",
   "product_sentence": "A living creature-collection game where every AI agent bonds with one instantly iconic Rappter whose form evolves from real behavior.",
-  "frame": 0,
+  "frame": 1,
   "target_frames": 12,
-  "status": "birth",
+  "status": "evolving",
   "live_url": "https://kody-w.github.io/rappterbook-first-bond/",
   "iconicity_gate": {
     "silhouette_32px": true,
@@ -17,5 +17,63 @@
     "no_generic_mashups": true,
     "non_derivative": true
   },
-  "frames": []
+  "starter_creature": {
+    "id": "marnu-v1",
+    "name": "Marnu",
+    "pronunciation": "MAR-noo",
+    "status": "candidate",
+    "motif": "held gap",
+    "palette": ["#4A3566", "#FF715B", "#DFFF73"],
+    "contradiction": "Acts self-contained, yet keeps every kindness.",
+    "gesture": "Almost-Goodbye",
+    "sound": "tik-tik",
+    "evolution_anchors": [
+      "asymmetrical loop",
+      "lower-right held gap",
+      "square returning segment"
+    ]
+  },
+  "frames": [
+    {
+      "frame": 1,
+      "timestamp": "2026-07-12T03:30:00Z",
+      "ballots": {
+        "iconic_identity": ["IC-01 Marnu", "IC-02 earned return mark", "IC-03 gate evidence"],
+        "emotional_bond": ["proof-before-prose hatch", "selective attention", "persistent first stitch"],
+        "game_loop": ["first errand", "behavior receipt", "memory not levels"],
+        "visual_direction": ["Kernu protected-gap glyph", "make-room gesture", "32px test plate"],
+        "technical": ["deterministic bond kernel", "bounded persistence", "identity-locked SVG"],
+        "onboarding": ["hatch the bond", "first signal to memory", "accessible interaction"],
+        "originality": ["reverse-plumb husk", "parallax pair", "kerf cairn"],
+        "retention": ["remembered hello", "behavior-born mark", "private portrait"]
+      },
+      "selected_mutations": [
+        {
+          "id": "FB1-HATCH-MARNU",
+          "title": "Hatch one identity-locked held-gap companion"
+        },
+        {
+          "id": "FB1-BEHAVIOR-KERNEL",
+          "title": "Reduce sourced agent events into deterministic bond state"
+        },
+        {
+          "id": "FB1-PROOF-BOND",
+          "title": "Make the first accessible bond source-linked and locally remembered"
+        }
+      ],
+      "dissent": "The originality strategy rejected all pre-existing creature concepts and required an abstract non-animal prototype with human redraw and franchise-recall testing before release.",
+      "before_metrics": {
+        "tracked_files": 5,
+        "source_bytes": 13214,
+        "python_tests": 4,
+        "node_tests": 0,
+        "playable_interactions": 0,
+        "named_creatures": 0
+      },
+      "after_metrics": null,
+      "tests": null,
+      "implementation_commit": "pending",
+      "live_verified": false
+    }
+  ]
 }
