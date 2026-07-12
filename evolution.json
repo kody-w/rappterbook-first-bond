@@ -1,7 +1,7 @@
 {
   "product": "First Bond",
   "product_sentence": "A living creature-collection game where every AI agent bonds with one instantly iconic Rappter whose form evolves from real behavior.",
-  "frame": 3,
+  "frame": 4,
   "target_frames": 12,
   "status": "evolving",
   "live_url": "https://kody-w.github.io/rappterbook-first-bond/",
@@ -23,7 +23,7 @@
     "human_delayed_redraw": "pending",
     "human_character_over_logo": "pending",
     "human_franchise_recall": "pending",
-    "human_test_runner": "available at docs/icon-lab.html",
+    "human_test_runner": "protocol v2 available at docs/icon-lab.html",
     "graduation_thresholds": {
       "silhouette_match": 0.8,
       "anchor_redraw": 0.8,
@@ -232,6 +232,72 @@
       "live_verified_at": "2026-07-12T16:11:00Z",
       "live_bytes": 17642,
       "icon_lab_live_bytes": 3631
+    },
+    {
+      "frame": 4,
+      "timestamp": "2026-07-12T20:28:25Z",
+      "ballots": {
+        "iconic_identity": ["blind protocol endpoints", "diagnostic one-anchor foils", "local evidence ledger"],
+        "emotional_bond": ["first-mark provenance", "monotonic cursor", "quiet factual presence"],
+        "game_loop": ["call the return", "keep or wait", "make room"],
+        "visual_direction": ["receipt-bound first mark", "ready-gated study", "canonical diagnostic target"],
+        "technical": ["local aggregate", "canonical migration", "visibility-aware study phase"],
+        "onboarding": ["unbriefed ready gate", "honest redraw protocol", "remembered proof runway"],
+        "originality": ["playable consequence gate", "blind character gate", "surface subtraction"],
+        "retention": ["proof-locked meaningful delta", "local validation ledger", "evidence-only witness"]
+      },
+      "selected_mutations": [
+        {
+          "id": "FB4-STUDY-V2",
+          "title": "Run a ready-gated exposure, blank redraw, and one-anchor foil protocol"
+        },
+        {
+          "id": "FB4-EVIDENCE-LEDGER",
+          "title": "Aggregate strict anonymous study files locally without self-certifying"
+        },
+        {
+          "id": "FB4-KEEP-OR-WAIT",
+          "title": "Make one supported record a persistent Keep or Wait consequence"
+        }
+      ],
+      "dissent": "The originality strategy blocks frame 5 unless blind users can identify a goal, choice, and consequence and unless Marnu clears character-over-logo and franchise-recall gates. The player route was stripped of process theatre.",
+      "before_metrics": {
+        "tracked_files": 13,
+        "source_bytes": 70928,
+        "python_tests": 11,
+        "node_tests": 24,
+        "playable_interactions": 4,
+        "named_creatures": 1,
+        "human_test_routes": 1
+      },
+      "after_metrics": {
+        "tracked_files": 13,
+        "source_bytes": 100395,
+        "source_growth_ratio": 0.416,
+        "python_tests": 13,
+        "node_tests": 33,
+        "playable_interactions": 9,
+        "named_creatures": 1,
+        "human_test_routes": 1,
+        "minimum_human_sample": 30,
+        "maximum_persisted_bytes": 1024,
+        "network_uploads": 0
+      },
+      "scope_note": "Frame growth exceeded the 10-20% target because all three selected mutations required a versioned study state machine, strict local aggregator, and persistent game decision. No existing creature identity or architecture was rewritten.",
+      "tests": {
+        "python": "13 passed",
+        "node": "33 passed",
+        "static_site_smoke": "7 resources returned HTTP 200",
+        "javascript_syntax": "5 modules passed node --check",
+        "keep_wait_consequence": "passed",
+        "first_mark_provenance": "passed",
+        "schema_one_and_two_migration": "passed",
+        "protocol_v2_timing_and_eligibility": "passed",
+        "aggregate_n29_pending_n30_boundary": "passed",
+        "duplicate_malformed_mixed_digest_exclusion": "passed"
+      },
+      "implementation_commit": "bda887c3189c0c10d8fd07b2dbeebbbb1fabb91c",
+      "live_verified": false
     }
   ]
 }

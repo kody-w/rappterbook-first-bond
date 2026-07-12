@@ -4,20 +4,21 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex">
-  <title>Silhouette Study 01</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'none'; img-src 'self' blob:; style-src 'unsafe-inline'; script-src 'self'; object-src 'none'; base-uri 'none'">
+  <title>Silhouette Study 02</title>
   <style>
-    :root { color-scheme: light; --ink:#111; --paper:#f5f2e9; --line:#bbb5a7; }
+    :root { color-scheme: light; --ink:#111; --paper:#f5f2e9; --line:#777269; }
     * { box-sizing: border-box; }
     body { margin:0; background:var(--paper); color:var(--ink); font:16px/1.5 system-ui,sans-serif; }
     main { width:min(100% - 32px,760px); margin:auto; padding:36px 0 72px; }
     h1 { font-size:clamp(2rem,7vw,4rem); line-height:1; letter-spacing:-.05em; }
     .notice { padding:14px; border:1px solid var(--line); }
-    #exposure { min-height:360px; display:grid; place-items:center; }
+    #ready, #exposure, #redraw { min-height:360px; display:grid; place-items:center; align-content:center; text-align:center; }
     #exposure svg { width:32px; height:32px; fill:#000; }
     #choices { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:28px 0; }
     #choices button { min-height:120px; border:2px solid var(--line); background:#fff; cursor:pointer; }
     #choices button[aria-pressed="true"] { border-color:#000; }
-    #choices svg { width:64px; height:64px; fill:#000; }
+    #choices svg { width:32px; height:32px; fill:#000; }
     fieldset { margin:20px 0; padding:18px; border:1px solid var(--line); }
     label { display:block; margin:8px 0; }
     input[type="text"] { width:100%; min-height:44px; padding:8px; font:inherit; }
@@ -25,14 +26,29 @@
     :focus-visible { outline:3px solid #155eef; outline-offset:3px; }
     [hidden] { display:none !important; }
     @media (max-width:520px) { #choices { grid-template-columns:repeat(2,1fr); } }
+    @media (forced-colors:active) {
+      #choices button[aria-pressed="true"] { outline:4px solid Highlight; }
+    }
   </style>
 </head>
 <body>
   <main>
     <p class="notice"><strong>Unbranded local study.</strong> Do not participate if you recognize the stimulus from an earlier context. No response is uploaded. Exported JSON contains no name, email, IP address, or freeform drawing.</p>
-    <h1>Silhouette Study 01</h1>
+    <h1>Silhouette Study 02</h1>
     <p id="countdown" role="status" aria-live="polite"></p>
-    <div id="exposure"></div>
+    <section id="ready">
+      <div>
+        <p>A facilitator should position one unbriefed participant, provide paper and pencil, then press Start. The study resets if this tab becomes hidden.</p>
+        <button id="start-study" type="button">Begin study</button>
+      </div>
+    </section>
+    <div id="exposure" hidden></div>
+    <section id="redraw" hidden>
+      <div>
+        <strong>Stimulus hidden</strong>
+        <p>Redraw the shape on paper. No anchor names are shown during the ten-second interval.</p>
+      </div>
+    </section>
     <div id="choices" aria-label="Silhouette choices" hidden></div>
 
     <form id="questions" hidden>
@@ -58,6 +74,16 @@
       <output></output>
       <p>One response is not validation. Export it for aggregation with at least 29 other unbriefed responses.</p>
       <button id="download-result" type="button">Download anonymous JSON</button>
+    </section>
+
+    <section>
+      <h2>Local aggregate ledger</h2>
+      <p>Import up to 100 protocol-v2 response files (128 KiB total). Duplicate, malformed, mixed-digest, hidden-tab, and ineligible sessions are excluded. Status remains pending below 30 eligible sessions.</p>
+      <label for="aggregate-files">Anonymous response JSON files</label>
+      <input id="aggregate-files" type="file" accept="application/json,.json" multiple>
+      <button id="aggregate-results" type="button">Aggregate locally</button>
+      <output id="aggregate-output" aria-live="polite"></output>
+      <button id="download-aggregate" type="button" disabled>Download aggregate summary</button>
     </section>
   </main>
   <script type="module" src="./icon-lab.mjs"></script>
