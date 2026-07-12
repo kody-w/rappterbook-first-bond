@@ -227,7 +227,11 @@
         "anonymous_study_export_allowlist": "passed"
       },
       "implementation_commit": "93707f80bdcedfce9d76f3af1293c449176b62dc",
-      "live_verified": false
+      "merge_commit": "67fff692fa2994f00f8107db92947d5c0e54e383",
+      "live_verified": true,
+      "live_verified_at": "2026-07-12T16:11:00Z",
+      "live_bytes": 17642,
+      "icon_lab_live_bytes": 3631
     }
   ]
 }
