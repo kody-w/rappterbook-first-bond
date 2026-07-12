@@ -28,25 +28,43 @@ const receiptSource = document.querySelector("#bond-receipt-source");
 const clearButton = document.querySelector("#clear-bond");
 const marnuButton = document.querySelector("#marnu-button");
 const mark = document.querySelector("#marnu-mark");
+const submitButton = form.querySelector('button[type="submit"]');
+const startLink = document.querySelector(".start-link");
 let memoryState = initialBond();
 let requestController = null;
 let requestGeneration = 0;
 let gestureTimer = null;
 let feedCache = null;
+let storageWritable = true;
 
 function loadBond() {
   try {
     const decoded = decodeBond(localStorage.getItem(STORAGE_KEY));
     memoryState = decoded.state;
+    storageWritable = decoded.writable;
+    if (decoded.needsRewrite) {
+      try {
+        localStorage.setItem(STORAGE_KEY, encodeBond(memoryState));
+      } catch {
+        storageWritable = false;
+      }
+    }
     return decoded;
   } catch {
     memoryState = initialBond();
-    return { state: memoryState, issue: "storage-unavailable" };
+    storageWritable = false;
+    return {
+      state: memoryState,
+      issue: "storage-unavailable",
+      writable: false,
+      needsRewrite: false
+    };
   }
 }
 
 function saveBond(state) {
   memoryState = state;
+  if (!storageWritable) return false;
   try {
     localStorage.setItem(STORAGE_KEY, encodeBond(state));
     return true;
@@ -60,9 +78,9 @@ function render(state) {
   marnuButton.dataset.pose = view.pose;
   marnuButton.setAttribute(
     "aria-label",
-    `${MARNU.name}. ${MARNU.contradiction} Pose: ${view.pose}. Play Almost-Goodbye.`
+    `${MARNU.name}. ${MARNU.contradiction} Pose: ${view.pose}. First mark: ${view.firstMark || "none"}. Play Almost-Goodbye.`
   );
-  mark.hidden = !view.mark;
+  mark.toggleAttribute("hidden", !view.mark);
   mark.dataset.mark = view.mark || "";
   if (view.mark) mark.setAttribute("d", MARK_PATHS[view.mark]);
   receiptText.textContent = view.receipt;
@@ -70,8 +88,8 @@ function render(state) {
   receiptSource.hidden = !view.sourceUrl;
   receiptSource.href = view.sourceUrl || "#";
   receiptSource.textContent = view.fingerprint
-    ? `View public source [${view.fingerprint}]`
-    : "View public source";
+    ? `View current mutable feed [receipt ${view.fingerprint}] (opens new tab)`
+    : "View current mutable feed (opens new tab)";
   if (state.agentId) input.value = state.agentId;
 }
 
@@ -100,13 +118,15 @@ async function loadFeed(signal) {
     throw new Error("source exceeded the byte limit");
   }
   const data = JSON.parse(text);
-  const changes = Array.isArray(data.changes) ? data.changes.slice(0, 2048) : [];
+  if (!Array.isArray(data.changes)) throw new TypeError("source shape is invalid");
+  const changes = data.changes;
   feedCache = { changes, expiresAt: Date.now() + FEED_TTL_MS };
   return changes;
 }
 
 async function latestChange(agentId, signal) {
-  return selectLatestAgentChange(await loadFeed(signal), agentId);
+  const seen = memoryState.agentId === agentId ? memoryState.seen : [];
+  return selectLatestAgentChange(await loadFeed(signal), agentId, seen);
 }
 
 form.addEventListener("submit", async event => {
@@ -120,14 +140,19 @@ form.addEventListener("submit", async event => {
   }
   input.removeAttribute("aria-invalid");
   requestController?.abort();
-  requestController = new AbortController();
+  const controller = new AbortController();
+  requestController = controller;
   const generation = ++requestGeneration;
-  const timeout = setTimeout(() => requestController.abort("timeout"), 8_000);
-  form.setAttribute("aria-busy", "true");
-  form.querySelector("button").disabled = true;
+  let timedOut = false;
+  const timeout = setTimeout(() => {
+    timedOut = true;
+    controller.abort();
+  }, 8_000);
+  submitButton.setAttribute("aria-busy", "true");
+  submitButton.disabled = true;
   status.textContent = "Marnu is checking the bounded public signal feed...";
   try {
-    const change = await latestChange(agentId, requestController.signal);
+    const change = await latestChange(agentId, controller.signal);
     if (generation !== requestGeneration) return;
     if (!change) {
       status.textContent = `No supported recent public behavior was found for ${agentId}. Marnu invented nothing.`;
@@ -154,20 +179,27 @@ form.addEventListener("submit", async event => {
         ? `${MARNU.name} kept one sourced signal on this device.`
         : `${MARNU.name} kept the signal for this visit; storage is unavailable.`;
     }
-    playGesture(false);
+    if (next.lastKind !== "presence") playGesture(false);
   } catch (error) {
     if (generation !== requestGeneration) return;
-    status.textContent = error.name === "AbortError"
-      ? "The public signal check timed out or was cancelled. Nothing changed."
-      : `Marnu could not verify a signal: ${error.message}`;
+    if (timedOut) {
+      status.textContent = "The public signal check timed out. Nothing changed.";
+    } else if (error?.name === "AbortError") {
+      status.textContent = "The public signal check was cancelled. Nothing changed.";
+    } else {
+      status.textContent = `Marnu could not verify a signal: ${error?.message || "unknown source error"}`;
+    }
   } finally {
     clearTimeout(timeout);
     if (generation === requestGeneration) {
-      form.removeAttribute("aria-busy");
-      form.querySelector("button").disabled = false;
+      submitButton.removeAttribute("aria-busy");
+      submitButton.disabled = false;
     }
   }
 });
+
+input.addEventListener("input", () => input.removeAttribute("aria-invalid"));
+startLink.addEventListener("click", () => setTimeout(() => input.focus(), 0));
 
 marnuButton.addEventListener("click", () => playGesture(true));
 marnuButton.addEventListener("animationend", () => {
@@ -184,9 +216,10 @@ clearButton.addEventListener("click", () => {
     // In-memory state is still cleared.
   }
   memoryState = initialBond();
+  storageWritable = true;
   input.value = "";
-  form.removeAttribute("aria-busy");
-  form.querySelector("button").disabled = false;
+  submitButton.removeAttribute("aria-busy");
+  submitButton.disabled = false;
   render(memoryState);
   status.textContent = "This device's bond memory was cleared.";
 });
@@ -196,6 +229,10 @@ if (validateCreature(MARNU).length) {
 }
 const loaded = loadBond();
 render(loaded.state);
-status.textContent = loaded.state.evidence
-  ? `${MARNU.name} remembers one public signal on this device. Check for something newer when ready.`
-  : `${MARNU.name} is waiting for a supported public signal.`;
+if (loaded.issue === "future-version" || loaded.issue === "corrupt") {
+  status.textContent = "Stored memory uses an unreadable or newer format. Clear it explicitly before bonding again.";
+} else {
+  status.textContent = loaded.state.evidence
+    ? `${MARNU.name} remembers one public signal on this device. Check for something newer when ready.`
+    : `${MARNU.name} is waiting for a supported public signal.`;
+}

@@ -47,22 +47,45 @@ function actorFor(change) {
   return normalizeAgentId(change?.id || change?.agent_id || change?.author);
 }
 
-export function selectLatestAgentChange(changes, rawAgentId) {
+export function sourceFingerprint(change, rawAgentId) {
+  const agentId = normalizeAgentId(rawAgentId);
+  if (!agentId || !change?.ts || !change?.type) return null;
+  return fingerprint(`${change.ts}|${change.type}|${agentId}`);
+}
+
+function isNewer(candidate, current) {
+  if (!current) return true;
+  const candidateTime = Date.parse(candidate.ts);
+  const currentTime = Date.parse(current.ts);
+  if (candidateTime !== currentTime) return candidateTime > currentTime;
+  return String(candidate.type) < String(current.type);
+}
+
+export function selectLatestAgentChange(changes, rawAgentId, seen = []) {
   const agentId = normalizeAgentId(rawAgentId);
   if (!agentId || !Array.isArray(changes)) return null;
-  let selected = null;
-  for (const change of changes.slice(0, 2048)) {
-    if (actorFor(change) !== agentId || !classifyChange(change) || !change?.ts) continue;
-    if (!selected || String(change.ts) > String(selected.ts)) selected = change;
+  if (changes.length > 4096) throw new RangeError("feed entry limit exceeded");
+  const seenSet = new Set(seen);
+  let meaningful = null;
+  let presence = null;
+  let duplicate = null;
+  for (const change of changes) {
+    const kind = classifyChange(change);
     if (
-      selected
-      && String(change.ts) === String(selected.ts)
-      && String(change.type) < String(selected.type)
-    ) {
-      selected = change;
+      actorFor(change) !== agentId
+      || !kind
+      || !Number.isFinite(Date.parse(change?.ts))
+    ) continue;
+    const id = sourceFingerprint(change, agentId);
+    if (seenSet.has(id)) {
+      if (isNewer(change, duplicate)) duplicate = change;
+    } else if (kind === "presence") {
+      if (isNewer(change, presence)) presence = change;
+    } else if (isNewer(change, meaningful)) {
+      meaningful = change;
     }
   }
-  return selected;
+  return meaningful || presence || duplicate;
 }
 
 export function changeToEvent(change, rawAgentId, seq) {
@@ -71,16 +94,16 @@ export function changeToEvent(change, rawAgentId, seq) {
   if (!agentId || !kind || !change?.ts || !change?.type) {
     throw new TypeError("supported sourced change required");
   }
-  const sourceKey = `${change.ts}|${change.type}|${agentId}`;
+  const eventId = sourceFingerprint(change, agentId);
   return {
     schema: 1,
-    id: fingerprint(sourceKey),
+    id: eventId,
     seq,
     kind,
     evidence: Object.freeze({
       type: String(change.type),
       timestamp: String(change.ts),
-      fingerprint: fingerprint(sourceKey),
+      fingerprint: eventId,
       sourceUrl: SOURCE_URL
     })
   };
@@ -116,11 +139,11 @@ export function projectBond(state, definition) {
     corePath: definition.corePath,
     segment: definition.segment,
     pose: state.lastKind || "rest",
-    mark: state.mark,
+    mark: state.firstMark || state.mark,
     firstMark: state.firstMark,
     receipt: evidence
-      ? `${definition.name} held public evidence: ${label}.`
-      : `${definition.name} is waiting for a supported public signal.`,
+      ? `Public evidence for ${state.agentId}: ${label}.`
+      : `No supported public signal is stored for ${state.agentId || "this device"}.`,
     sourceUrl: evidence?.sourceUrl || null,
     fingerprint: evidence?.fingerprint || null
   };
@@ -140,15 +163,33 @@ function migrateV1(record) {
   next.lastKind = KINDS.includes(record.lastKind) ? record.lastKind : null;
   next.mark = ["stitch", "notch"].includes(record.mark) ? record.mark : null;
   next.firstMark = next.mark;
+  if (record.evidence && record.evidence.type && record.evidence.timestamp) {
+    const currentId = fingerprint(
+      `${record.evidence.timestamp}|${record.evidence.type}|${next.agentId}`
+    );
+    next.seen = [...new Set([...next.seen, currentId])].slice(-20);
+    next.evidence = {
+      type: String(record.evidence.type),
+      timestamp: String(record.evidence.timestamp),
+      fingerprint: currentId,
+      sourceUrl: SOURCE_URL
+    };
+  }
   return next;
 }
 
 export function decodeBond(raw) {
-  if (!raw) return { state: initialBond(), issue: "empty" };
+  if (!raw) return {
+    state: initialBond(), issue: "empty", writable: true, needsRewrite: false
+  };
   try {
     const record = typeof raw === "string" ? JSON.parse(raw) : raw;
-    if (record?.schema === 1) return { state: migrateV1(record), issue: "migrated" };
-    if (record?.schema !== 2) return { state: initialBond(), issue: "future-version" };
+    if (record?.schema === 1) return {
+      state: migrateV1(record), issue: "migrated", writable: true, needsRewrite: true
+    };
+    if (record?.schema !== 2) return {
+      state: initialBond(), issue: "future-version", writable: false, needsRewrite: false
+    };
     const state = initialBond(record.agentId);
     state.lastSeq = Number.isInteger(record.lastSeq) ? record.lastSeq : 0;
     state.seen = Array.isArray(record.seen)
@@ -172,9 +213,11 @@ export function decodeBond(raw) {
         sourceUrl: SOURCE_URL
       };
     }
-    return { state, issue: "ok" };
+    return { state, issue: "ok", writable: true, needsRewrite: false };
   } catch {
-    return { state: initialBond(), issue: "corrupt" };
+    return {
+      state: initialBond(), issue: "corrupt", writable: false, needsRewrite: false
+    };
   }
 }
 

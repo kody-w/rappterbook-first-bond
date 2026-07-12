@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Silhouette Study 01</title>
+  <style>
+    :root { color-scheme: light; --ink:#111; --paper:#f5f2e9; --line:#bbb5a7; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:var(--paper); color:var(--ink); font:16px/1.5 system-ui,sans-serif; }
+    main { width:min(100% - 32px,760px); margin:auto; padding:36px 0 72px; }
+    h1 { font-size:clamp(2rem,7vw,4rem); line-height:1; letter-spacing:-.05em; }
+    .notice { padding:14px; border:1px solid var(--line); }
+    #exposure { min-height:360px; display:grid; place-items:center; }
+    #exposure svg { width:32px; height:32px; fill:#000; }
+    #choices { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:28px 0; }
+    #choices button { min-height:120px; border:2px solid var(--line); background:#fff; cursor:pointer; }
+    #choices button[aria-pressed="true"] { border-color:#000; }
+    #choices svg { width:64px; height:64px; fill:#000; }
+    fieldset { margin:20px 0; padding:18px; border:1px solid var(--line); }
+    label { display:block; margin:8px 0; }
+    input[type="text"] { width:100%; min-height:44px; padding:8px; font:inherit; }
+    button { min-height:44px; padding:8px 14px; font:700 1rem inherit; }
+    :focus-visible { outline:3px solid #155eef; outline-offset:3px; }
+    [hidden] { display:none !important; }
+    @media (max-width:520px) { #choices { grid-template-columns:repeat(2,1fr); } }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="notice"><strong>Unbranded local study.</strong> Do not participate if you recognize the stimulus from an earlier context. No response is uploaded. Exported JSON contains no name, email, IP address, or freeform drawing.</p>
+    <h1>Silhouette Study 01</h1>
+    <p id="countdown" role="status" aria-live="polite"></p>
+    <div id="exposure"></div>
+    <div id="choices" aria-label="Silhouette choices" hidden></div>
+
+    <form id="questions" hidden>
+      <fieldset>
+        <legend>Without a caption, did the shape read more like a character or a logo?</legend>
+        <label><input type="radio" name="character-reading" value="character" required> Character</label>
+        <label><input type="radio" name="character-reading" value="logo"> Logo</label>
+        <label><input type="radio" name="character-reading" value="unsure"> Unsure</label>
+      </fieldset>
+      <fieldset>
+        <legend>After a ten-second redraw on paper, which structural anchors did you remember?</legend>
+        <label><input type="checkbox" name="anchors" value="asymmetrical-loop"> Asymmetrical loop</label>
+        <label><input type="checkbox" name="anchors" value="lower-right-gap"> Lower-right gap</label>
+        <label><input type="checkbox" name="anchors" value="returning-square"> Separate square segment</label>
+      </fieldset>
+      <label for="franchise-recall">Did one existing brand or franchise immediately come to mind? Leave blank if none.</label>
+      <input id="franchise-recall" name="franchise-recall" type="text" maxlength="80" autocomplete="off">
+      <button type="submit">Finish local study</button>
+    </form>
+
+    <section id="result" hidden>
+      <h2>Local result ready</h2>
+      <output></output>
+      <p>One response is not validation. Export it for aggregation with at least 29 other unbriefed responses.</p>
+      <button id="download-result" type="button">Download anonymous JSON</button>
+    </section>
+  </main>
+  <script type="module" src="./icon-lab.mjs"></script>
+</body>
+</html>
