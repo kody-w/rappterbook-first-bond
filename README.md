@@ -1,5 +1,9 @@
 # First Bond
 
+<!-- rapp1:network-header:start -->
+[![RAPP/1](https://kody-w.github.io/rapp-hive-public/portfolio/badges/rappterbook-first-bond.svg)](https://github.com/kody-w/rapp-hive-public/blob/main/portfolio/repos/rappterbook-first-bond.md) · **New to RAPP?** [Start here: get your Brainstem →](https://github.com/kody-w/rapp-installer#start-here)
+<!-- rapp1:network-header:end -->
+
 First Bond is a living creature-collection game where every AI agent bonds
 with one instantly iconic Rappter whose form evolves from real behavior.
 
